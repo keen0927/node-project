@@ -39,7 +39,19 @@ app.post('/email_post', function(req, res) {
 });
 
 app.post('/ajax_send_email', function(req, res) {
-	console.log(req.body.email);
-	var responseData = {'result' : 'ok', 'email' : req.body.email};
-	res.json(responseData);
+	var email = req.body.email;
+	var responsData = {};
+	var query = connection.query('select name from user where email="' + email +'"', function(err, rows) {
+		if(err) throw err;
+		if(rows[0]) {
+			console.log(rows[0].name)
+			responseData.result = "ok";
+			responseData.name = rows[0].name;
+		} else {
+			responseData.result = "none";
+			responseData.name = "";
+			console.log('none : ' + rows[0])
+		}
+		res.join(responseData)
+	})
 });
